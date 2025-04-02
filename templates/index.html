@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emotion-Sensitive Chatbot</title>
     <!-- Link to Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
@@ -46,6 +48,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            background-color: #f9fafb;
         }
 
         .chat-message {
@@ -110,7 +113,7 @@
 
     <script>
         async function sendMessage() {
-            const userInput = document.getElementById('userInput').value;
+            const userInput = document.getElementById('userInput').value.trim();
             const chatBody = document.getElementById('chatBody');
 
             // Append user's message to chat
@@ -119,8 +122,11 @@
             userMessage.innerText = userInput;
             chatBody.appendChild(userMessage);
 
+            // Clear the input field after sending
+            document.getElementById('userInput').value = '';
+
             try {
-                const response = await fetch('/get_response', {
+                const response = await fetch('/get_response', {  // Update URL for production backend
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ message: userInput })
@@ -133,14 +139,18 @@
                 botMessage.innerText = data.response;
                 chatBody.appendChild(botMessage);
 
-                // Clear input
-                document.getElementById('userInput').value = '';
-                chatBody.scrollTop = chatBody.scrollHeight; // Scroll to bottom
+                // Scroll to the bottom of chat
+                chatBody.scrollTop = chatBody.scrollHeight;
             } catch (error) {
                 console.error("Error:", error);
+
+                // Append error message to chat
+                const errorMessage = document.createElement('div');
+                errorMessage.classList.add('chat-message');
+                errorMessage.innerText = "Oops! Something went wrong.";
+                chatBody.appendChild(errorMessage);
             }
         }
     </script>
 </body>
 </html>
-
