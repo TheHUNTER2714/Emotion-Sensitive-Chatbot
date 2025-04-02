@@ -2,86 +2,42 @@
 <html>
 <head>
     <title>Emotion-Sensitive Chatbot</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f2f2f2;
-            margin: 0;
-            padding: 0;
-        }
-        #chat-container {
-            width: 50%;
-            margin: 50px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        #chat-box {
-            height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin-bottom: 10px;
-            background-color: #f9f9f9;
-        }
-        #user-input {
-            display: flex;
-        }
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            margin-left: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div id="chat-container">
-        <h2>Emotion-Sensitive Chatbot</h2>
-        <div id="chat-box"></div>
-        <div id="user-input">
-            <input type="text" id="message" placeholder="Type a message...">
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
     <script>
-        function sendMessage() {
-            const message = document.getElementById('message').value;
-            const chatBox = document.getElementById('chat-box');
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            const chatbotResponse = document.getElementById('chatbotResponse');
 
-            // Display user message
-            chatBox.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
+            // Log the user input for debugging
+            console.log("User Input:", userInput);
 
-            // Send the message to the backend
-            fetch('/get_response', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ message: message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Display chatbot response
-                chatBox.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-            });
+            try {
+                const response = await fetch('/get_response', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userInput })
+                });
+                
+                const data = await response.json();
+                
+                // Log the server response for debugging
+                console.log("Server Response:", data.response);
 
-            // Clear input field
-            document.getElementById('message').value = '';
+                chatbotResponse.innerHTML = `Chatbot: ${data.response}`;
+            } catch (error) {
+                // Log any errors for debugging
+                console.error("Error:", error);
+                chatbotResponse.innerHTML = `Chatbot: Oops! Something went wrong.`;
+            }
         }
     </script>
+</head>
+<body>
+    <h1>Emotion-Sensitive Chatbot</h1>
+    <div>
+        <label for="userInput">You:</label>
+        <input type="text" id="userInput" />
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="chatbotResponse"></div>
 </body>
 </html>
